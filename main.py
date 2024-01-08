@@ -1,6 +1,6 @@
-VERSION = 8.1
+VERSION = '8.2'
 """
-change , to . in distance values
+Reset and update Depot_List for each input file
 """
 
 import os, datetime, copy, random, pathlib
@@ -87,8 +87,7 @@ class MockThread:
             ot_example = self.trip_list[0][2]
             if isinstance(ot_example, datetime.time):
                 self.trip_list = self.attach_date(self.trip_list)
-            if len(Depot_List)==0:
-                self.update_depot()
+            self.update_depot()
 
             # use logic based algorithm to create schedule
             self.all_duties = self.logic_algorithm()
@@ -597,6 +596,7 @@ class MockThread:
 
     def update_depot(self):
         global Depot_List
+        Depot_List = []
         for trip in self.trip_list:
             if not trip[3] in Depot_List:
                 Depot_List.append(trip[3])
@@ -780,7 +780,8 @@ class MockThread:
         return earliest_connect_trip_i, latest_connect_trip_i
 
     def output_to_xlsx(self, outputs_dict: Dict[str,Dict[int,Duty]]) -> None:
-        output_dir = os.path.join(str(pathlib.Path.home()), 'Desktop', 'bdsp_output')
+        #output_dir = os.path.join(str(pathlib.Path.home()), 'Desktop', 'bdsp_output')
+        output_dir = os.path.abspath('output')
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
         duties_dir = os.path.join(output_dir, 'duties') # input duties for rostering
@@ -1047,9 +1048,10 @@ class MockThread:
 class MainWindow:
     def __init__(self) -> None:
         mock_thread = MockThread()
-        mock_thread.input_dir_path = 'C:\\COMMON\\FIVERR\\javivi_sevilla\\CODE\\input'
+        mock_thread.input_dir_path = os.path.abspath('input')
         mock_thread.start_thread()
         print('END')
 
 if __name__=="__main__":
+    print('VERSION:',VERSION)
     window = MainWindow()
